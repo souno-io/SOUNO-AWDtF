@@ -1,9 +1,20 @@
 import ipaddress
 import re
+import rich
 
 class IPManager:
     def __init__(self):
         self.ip_list = set()
+        self.file_path = 'ip.txt'
+        self.load_from_file()
+        
+    def load_from_file(self):
+        try:
+            with open(self.file_path, 'r') as f:
+                for line in f:
+                    self.ip_list.add(line.strip())
+        except FileNotFoundError:
+            self.ip_list = set()
 
     def add(self, ip_rule):
         if '-' in ip_rule:
@@ -18,6 +29,8 @@ class IPManager:
                 self.ip_list.add(str(ip))
         else:
             self.ip_list.add(ip_rule)
+        self._save_to_file()
+        self.show()
 
     def remove(self, ip_rule):
         if '-' in ip_rule:
@@ -32,19 +45,24 @@ class IPManager:
                 self.ip_list.discard(str(ip))
         else:
             self.ip_list.discard(ip_rule)
+        self._save_to_file()
+        self.show()
+    
+    def show(self):
+        rich.print("IP地址列表为：",self.ip_list)
 
     def query(self, ip):
         return ip in self.ip_list
 
-    def save_to_file(self, filename):
-        with open(filename, 'w') as file:
+    def _save_to_file(self):
+        with open(self.file_path, 'w') as f:
             for ip in sorted(self.ip_list):
-                file.write(f'http://{ip}\n')
+                f.write(str(ip) + '\n')
 
 if __name__ == '__main__':
     import argparse
 
-    parser = argparse.ArgumentParser(description='Manage IP addresses and generate a URL list.')
+    parser = argparse.ArgumentParser(description='管理IP地址或者生成url')
     parser.add_argument('-a', '--add', type=str, help='Add IP range to list')
     parser.add_argument('-r', '--remove', type=str, help='Remove IP range from list')
     parser.add_argument('-q', '--query', type=str, help='Query a specific IP')

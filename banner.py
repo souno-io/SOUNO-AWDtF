@@ -8,5 +8,13 @@ def print_banner():
 ███████║╚██████╔╝╚██████╔╝██║ ╚████║╚██████╔╝      ██║  ██║╚███╔███╔╝██████╔╝   ██║   ██║     
 ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝       ╚═╝  ╚═╝ ╚══╝╚══╝ ╚═════╝    ╚═╝   ╚═╝     
                                                                                         
+Version: 1.0.0
+Author: souno@qq.com
+Description: This is a scripting tool for automated attacks in an AWD tournament environment。
+
+使用说明:
+  - 启动程序: python SOUNO-AWDtF.py
+  - 帮助信息: python SOUNO-AWDtF.py --help
+执行结果：
     """
     print(banner)

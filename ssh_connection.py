@@ -42,4 +42,4 @@ class SSHConnectionTester:
         with open(self.output_file, 'a') as file:
             for ip, result in results:
                 if result:
-                    file.write(f"[ssh][{datetime.now()}] {ip}: {result}")
+                    file.write(f"[ssh][{datetime.now()}] {ip}:{port} {result}")

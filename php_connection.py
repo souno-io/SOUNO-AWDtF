@@ -1,9 +1,7 @@
+import requests
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
-import requests
-import rich
-from rich import print  # 导入 rich 的 print 方法，以便输出格式化文本
+from rich import print as rich_print  # 导入 rich 的 print 方法，以便输出格式化文本
 
 
 class PHPConnectionTester:
@@ -33,22 +31,22 @@ class PHPConnectionTester:
                 return
 
             # 输出结果
-            rich.print("=======================================")
-            rich.print(f"URL: {url}")
-            rich.print(f"Method: {method}")
-            rich.print(f"Use System: {'Yes' if use_system else 'No'}")
-            rich.print(f"Status Code: {response.status_code}")
-            rich.print("=======================================")
+            rich_print("=======================================")
+            rich_print(f"URL: {url}")
+            rich_print(f"Method: {method}")
+            rich_print(f"Use System: {'Yes' if use_system else 'No'}")
+            rich_print(f"Status Code: {response.status_code}")
+            rich_print("=======================================")
             if response.status_code == 200:
                 result = response.text
-                rich.print(f"Response: {result}")
+                rich_print(f"Response: {result}")
                 # 如果状态码为200，将响应写入到文件中
                 with open(self.output_file, 'a', encoding='utf-8') as file:
                     file.write(f"[php][{datetime.now()}] {url} - {result}")
             else:
-                print("Failed to execute command.")
+                rich_print("Failed to execute command.")
         except requests.exceptions.RequestException as e:
-            print(f"Request failed: {e}")
+            rich_print(f"Request failed: {e}")
 
     def test_all_urls(
             self, key, command='echo "Connection Successful"', method='POST', use_system=False, max_workers=20
@@ -67,6 +65,6 @@ class PHPConnectionTester:
                     try:
                         future.result()
                     except Exception as e:
-                        print(f"{url} generated an exception: {e}")
+                        rich_print(f"{url} generated an exception: {e}")
         except FileNotFoundError:
-            print(f"File not found: {self.urls_file}")
+            rich_print(f"File not found: {self.urls_file}")

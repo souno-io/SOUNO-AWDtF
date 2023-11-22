@@ -19,10 +19,10 @@ if __name__ == '__main__':
                         help='要使用的 HTTP 方法（GET 或 POST）。')
     parser.add_argument('-s', '--use_system', action='store_true', help='使用 system 函数而不是 eval。')
     parser.add_argument('-c', '--command', type=str, help='需要执行的命令。')
-    parser.add_argument('--inject', action='store_true', default=False, help='是否注入不死马')
-    parser.add_argument('--ssh_port', type=int, default=22, help='SSH 用户名')
-    parser.add_argument('--ssh_username', type=str, default='root', help='SSH 用户名')
-    parser.add_argument('--ssh_password', type=str, help='SSH 密码')
+    parser.add_argument('-i', '--inject', action='store_true', default=False, help='是否注入不死马')
+    parser.add_argument('-sp', '--ssh_port', type=int, default=22, help='SSH 用户名')
+    parser.add_argument('-su', '--ssh_username', type=str, default='root', help='SSH 用户名')
+    parser.add_argument('-spw', '--ssh_password', type=str, help='SSH 密码')
     args = parser.parse_args()
 
     # 检查是否有参数被输入

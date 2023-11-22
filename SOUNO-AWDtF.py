@@ -9,7 +9,6 @@ from ssh_connection import SSHConnectionTester
 
 if __name__ == '__main__':
     print_banner()
-
     parser = argparse.ArgumentParser(description='这是一个用于AWD锦标赛环境中自动攻击的脚本工具。')
     parser.add_argument('-a', '--add', type=str, help='将 IP 范围添加到列表')
     parser.add_argument('-r', '--remove', type=str, help='从列表中删除 IP 范围')

@@ -21,7 +21,6 @@ class PHPConnectionTester:
 
     def send_request(self, url: str, payload: dict, method: str) -> Optional[requests.Response]:
         try:
-            print(payload)
             if method.upper() == 'GET':
                 response = self.session.get(url, params=payload, headers=self.HEADERS, timeout=1)
             else:

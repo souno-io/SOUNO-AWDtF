@@ -53,9 +53,6 @@ class IPManager:
     def show(self):
         rich.print("IP地址列表为：", self.ip_list)
 
-    def query(self, ip):
-        return ip in self.ip_list
-
     def _save_to_file(self):
         with open(self.file_path, 'w') as f:
             for ip in sorted(self.ip_list):
@@ -65,10 +62,10 @@ class IPManager:
         for ip in self.ip_list:
             url = f"http://{ip}:{port}{path}"
             self.urls.add(url)
+        return self.urls
 
     def save_urls_to_file(self):
         with open(self.file_urls, 'w') as file:
             for url in self.urls:
                 file.write(url + '\n')
         rich.print(f"URLs have been saved to {self.file_urls}")
-

